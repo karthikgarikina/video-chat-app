@@ -1,46 +1,44 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
+import { useSocket } from "@/hooks/useSocket";
+import { useUserMedia } from "@/hooks/useUserMedia";
+import { useWebRTC } from "@/hooks/useWebRTC";
 
 export default function RoomPage() {
   const params = useParams();
-  const roomId = params.roomId;
+  const roomId = params.roomId as string;
+
+  const socketRef = useSocket();
+  const localStream = useUserMedia();
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current && localStream) {
+      videoRef.current.srcObject = localStream;
+    }
+  }, [localStream]);
+
+  useWebRTC(socketRef.current, roomId, localStream);
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
-      <h1 className="text-2xl font-bold">Room: {roomId}</h1>
+      <h1 className="text-xl font-bold">Room: {roomId}</h1>
 
       <video
+        ref={videoRef}
         data-test-id="local-video"
         autoPlay
         muted
-        className="w-96 border mt-4"
+        className="w-96 mt-4 border"
       />
 
       <div
         data-test-id="remote-video-container"
-        className="grid grid-cols-2 gap-4 mt-4"
+        className="grid grid-cols-2 gap-4 mt-6"
       ></div>
-
-      <div className="flex gap-4 mt-6">
-        <button data-test-id="mute-mic-button" className="bg-gray-200 px-4 py-2">
-          Mute
-        </button>
-
-        <button
-          data-test-id="toggle-camera-button"
-          className="bg-gray-200 px-4 py-2"
-        >
-          Camera
-        </button>
-
-        <button
-          data-test-id="hangup-button"
-          className="bg-red-500 text-white px-4 py-2"
-        >
-          Hang Up
-        </button>
-      </div>
     </div>
   );
 }
