@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node --project tsconfig.server.json server.ts",
-    "build": "next build",
-    "start": "NODE_ENV=production node server.js"
+    "dev": "node -e \"process.env.NODE_ENV='development'; require('ts-node').register({ project: 'tsconfig.server.json' }); require('./server.ts');\"",
+    "build": "next build && tsc -p tsconfig.server.json",
+    "start": "node -e \"process.env.NODE_ENV='production'; require('./dist-server/server.js');\"",
+    "lint": "eslint ."
   },
   "dependencies": {
     "next": "16.1.6",
