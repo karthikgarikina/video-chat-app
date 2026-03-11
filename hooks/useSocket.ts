@@ -1,30 +1,48 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
+export type SocketConnectionState =
+  | "connecting"
+  | "connected"
+  | "disconnected"
+  | "error";
+
 export const useSocket = () => {
-  const socketRef = useRef<Socket | null>(null);
+  const [socket] = useState<Socket>(() =>
+    io({
+      transports: ["websocket"],
+      reconnection: true,
+    })
+  );
+  const [connectionState, setConnectionState] =
+    useState<SocketConnectionState>("connecting");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const socket = io({
-      transports: ["websocket"],
-    });
-
-    socketRef.current = socket;
-
     socket.on("connect", () => {
-      console.log("Connected to signaling server:", socket.id);
+      setConnectionState("connected");
+      setError(null);
     });
 
     socket.on("disconnect", () => {
-      console.log("Disconnected from signaling server");
+      setConnectionState("disconnected");
+    });
+
+    socket.on("connect_error", (connectError) => {
+      setConnectionState("error");
+      setError(connectError.message);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [socket]);
 
-  return socketRef;
+  return {
+    socket,
+    connectionState,
+    error,
+  };
 };
