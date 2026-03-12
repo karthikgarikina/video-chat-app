@@ -8,8 +8,8 @@ Users can create a room, share the room link, and join a video call with up to *
 
 ## Demo
 
-- Live Demo: ``
-- Video Demo: ``
+- Live Demo: `https://cartickmeet.onrender.com`
+- Video Demo: `https://youtu.be/EQqCp3UqzqY?si=Ftu4lQ9s0hfI1L6a`
 ---
 
 # Tech Stack
@@ -21,7 +21,6 @@ Users can create a room, share the room link, and join a video call with up to *
 - Tailwind CSS
 - Docker
 - Docker Compose
-
 ---
 
 # Features
